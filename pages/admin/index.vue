@@ -28,16 +28,6 @@
         </div>
       </div>
       
-      <!-- Card 3 -->
-      <div class="bg-white rounded-2xl p-6 border border-outline-variant shadow-sm flex items-center gap-6">
-        <div class="w-14 h-14 bg-error/10 rounded-full flex items-center justify-center text-error">
-          <span class="material-symbols-outlined text-2xl">visibility</span>
-        </div>
-        <div>
-          <p class="text-on-surface-variant font-label-md">Pengunjung</p>
-          <h2 class="text-3xl font-bold text-on-background">1,204</h2>
-        </div>
-      </div>
     </div>
   </div>
 </template>
