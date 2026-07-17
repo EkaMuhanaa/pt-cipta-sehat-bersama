@@ -18,9 +18,5 @@ export default defineNuxtConfig({
       ]
     }
   },
-  css: ['~/assets/css/main.css'],
-  routeRules: {
-    '/api/**': { proxy: `${API_URL}/api/**` },
-    '/uploads/**': { proxy: `${API_URL}/uploads/**` }
-  }
+  css: ['~/assets/css/main.css']
 })
