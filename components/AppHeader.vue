@@ -4,7 +4,7 @@
     class="fixed top-0 w-full z-[100] shadow-md bg-white flex flex-col"
   >
     <!-- Top Bar -->
-    <div class="hidden md:block bg-primary text-white py-2 px-4 lg:px-8 text-sm">
+    <div class="hidden md:block bg-primary text-white py-2 px-4 lg:px-8 text-xs font-medium tracking-wide">
       <div class="w-full flex justify-between items-center">
         <div class="flex items-center gap-6">
           <a href="https://wa.me/6282140009541" class="hover:text-secondary-fixed transition-colors flex items-center gap-2">
@@ -13,17 +13,15 @@
           <div class="w-px h-4 bg-white/50"></div>
           <div class="flex items-center gap-6">
              <a href="#" class="hover:text-secondary-fixed transition-colors flex items-center gap-1">
-               <span class="material-symbols-outlined text-[16px]">public</span> @ptciptasehatbersama
+               <span class="material-symbols-outlined text-[14px]">public</span> @ptciptasehatbersama
              </a>
              <a href="#" class="hover:text-secondary-fixed transition-colors flex items-center gap-1">
-               <span class="material-symbols-outlined text-[16px]">share</span> @ptciptasehatbersama
+               <span class="material-symbols-outlined text-[14px]">share</span> @ptciptasehatbersama
              </a>
           </div>
         </div>
         <div class="flex items-center gap-4">
-          <span class="font-medium tracking-wide">Selamat datang</span>
-          <div class="w-px h-4 bg-white/50"></div>
-          <span class="font-bold flex items-center gap-1">ID <span class="material-symbols-outlined text-sm">expand_more</span></span>
+          <span>Selamat datang</span>
         </div>
       </div>
     </div>
@@ -42,11 +40,11 @@
 
         <!-- Desktop Navigation Links -->
         <div class="hidden xl:flex items-center gap-8">
-          <NuxtLink to="/" class="font-bold text-slate-800 hover:text-primary transition-colors text-[15px]">Beranda</NuxtLink>
-          <NuxtLink to="/tentang-kami" class="font-bold text-slate-800 hover:text-primary transition-colors text-[15px]">Tentang Kami</NuxtLink>
-          <NuxtLink to="/layanan" class="font-bold text-slate-800 hover:text-primary transition-colors text-[15px]">Layanan</NuxtLink>
-          <NuxtLink to="/edukasi-k3" class="font-bold text-slate-800 hover:text-primary transition-colors text-[15px]">Edukasi &amp; K3</NuxtLink>
-          <NuxtLink to="/artikel" class="font-bold text-slate-800 hover:text-primary transition-colors text-[15px]">Artikel</NuxtLink>
+          <NuxtLink to="/" class="nav-link font-bold text-slate-800 hover:text-primary transition-colors text-[15px]">Beranda</NuxtLink>
+          <NuxtLink to="/tentang-kami" class="nav-link font-bold text-slate-800 hover:text-primary transition-colors text-[15px]">Tentang Kami</NuxtLink>
+          <NuxtLink to="/layanan" class="nav-link font-bold text-slate-800 hover:text-primary transition-colors text-[15px]">Layanan</NuxtLink>
+          <NuxtLink to="/edukasi-k3" class="nav-link font-bold text-slate-800 hover:text-primary transition-colors text-[15px]">Edukasi &amp; K3</NuxtLink>
+          <NuxtLink to="/artikel" class="nav-link font-bold text-slate-800 hover:text-primary transition-colors text-[15px]">Artikel</NuxtLink>
         </div>
 
         <!-- Mobile Menu Button -->
@@ -59,11 +57,11 @@
     <!-- Mobile Navigation Menu -->
     <div v-show="isMenuOpen" class="xl:hidden bg-white w-full border-t border-slate-200 absolute top-full left-0 shadow-xl pb-4">
       <div class="flex flex-col px-margin-desktop py-4 space-y-4">
-        <NuxtLink to="/" class="text-slate-800 font-bold border-b border-slate-100 pb-3" @click="isMenuOpen = false">Beranda</NuxtLink>
-        <NuxtLink to="/tentang-kami" class="text-slate-800 font-bold border-b border-slate-100 pb-3" @click="isMenuOpen = false">Tentang Kami</NuxtLink>
-        <NuxtLink to="/layanan" class="text-slate-800 font-bold border-b border-slate-100 pb-3" @click="isMenuOpen = false">Layanan</NuxtLink>
-        <NuxtLink to="/edukasi-k3" class="text-slate-800 font-bold border-b border-slate-100 pb-3" @click="isMenuOpen = false">Edukasi &amp; K3</NuxtLink>
-        <NuxtLink to="/artikel" class="text-slate-800 font-bold border-b border-slate-100 pb-3" @click="isMenuOpen = false">Artikel</NuxtLink>
+        <NuxtLink to="/" class="nav-link text-slate-800 font-bold border-b border-slate-100 pb-3" @click="isMenuOpen = false">Beranda</NuxtLink>
+        <NuxtLink to="/tentang-kami" class="nav-link text-slate-800 font-bold border-b border-slate-100 pb-3" @click="isMenuOpen = false">Tentang Kami</NuxtLink>
+        <NuxtLink to="/layanan" class="nav-link text-slate-800 font-bold border-b border-slate-100 pb-3" @click="isMenuOpen = false">Layanan</NuxtLink>
+        <NuxtLink to="/edukasi-k3" class="nav-link text-slate-800 font-bold border-b border-slate-100 pb-3" @click="isMenuOpen = false">Edukasi &amp; K3</NuxtLink>
+        <NuxtLink to="/artikel" class="nav-link text-slate-800 font-bold border-b border-slate-100 pb-3" @click="isMenuOpen = false">Artikel</NuxtLink>
         <a class="text-slate-800 font-bold pb-1" href="#">Kontak</a>
       </div>
     </div>
@@ -84,5 +82,12 @@ watch(route, () => {
 </script>
 
 <style scoped>
-/* No extra styles needed; using Tailwind classes */
+/* Active navigation link styling */
+.nav-link.router-link-active:not([href="/"]),
+.nav-link.router-link-exact-active {
+  @apply text-primary;
+  text-decoration: underline;
+  text-underline-offset: 8px;
+  text-decoration-thickness: 3px;
+}
 </style>

@@ -10,9 +10,13 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/icon": "^2.3.1",
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@prisma/client": "^7.8.0",
+    "@tiptap/starter-kit": "^3.28.0",
+    "@tiptap/vue-3": "^3.28.0",
     "nuxt": "^3.21.8",
+    "nuxt-icon": "^1.0.0-beta.7",
     "vue": "^3.5.39",
     "vue-router": "^5.1.0"
   },

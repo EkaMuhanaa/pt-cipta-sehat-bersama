@@ -3,7 +3,7 @@
     <!-- Hero Section -->
     <section class="relative py-32 overflow-hidden reveal-on-scroll">
       <div class="absolute inset-0 z-0">
-        <img src="https://images.unsplash.com/photo-1541888086968-3e4210ff40f5?q=80&w=2000&auto=format&fit=crop" alt="Edukasi K3 Background" class="w-full h-full object-cover" />
+        <img :src="getSetting('edu_hero', 'https://images.unsplash.com/photo-1541888086968-3e4210ff40f5?q=80&w=2000&auto=format&fit=crop')" alt="Edukasi K3 Background" class="w-full h-full object-cover" />
         <div class="absolute inset-0 bg-primary/80 mix-blend-multiply"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
       </div>
@@ -160,6 +160,11 @@
 
 <script setup>
 import { onMounted } from 'vue';
+
+const { data: settingsData } = await useFetch('/api/settings')
+const settings = settingsData.value?.data || {}
+
+const getSetting = (key, defaultUrl) => settings[key] || defaultUrl
 
 onMounted(() => {
   const observerOptions = {

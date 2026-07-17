@@ -17,6 +17,9 @@
         <NuxtLink to="/admin/services" class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white hover:text-primary transition-all font-label-md" active-class="bg-white text-primary font-bold shadow-sm">
           <span class="material-symbols-outlined text-xl">medical_services</span> Layanan
         </NuxtLink>
+        <NuxtLink to="/admin/settings/images" class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white hover:text-primary transition-all font-label-md" active-class="bg-white text-primary font-bold shadow-sm">
+          <span class="material-symbols-outlined text-xl">imagesmode</span> Pengaturan Gambar
+        </NuxtLink>
       </nav>
       <div class="p-4 border-t border-outline-variant">
         <button @click="logout" class="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-error hover:bg-error/10 transition-all font-label-md">

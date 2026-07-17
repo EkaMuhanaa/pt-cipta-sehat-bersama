@@ -5,9 +5,9 @@
         <h1 class="text-3xl font-display-md text-on-background">Manajemen Artikel</h1>
         <p class="text-on-surface-variant font-body-md mt-1">Kelola berita, edukasi K3, dan artikel kesehatan.</p>
       </div>
-      <button class="bg-primary text-white px-6 py-3 rounded-full font-label-md flex items-center gap-2 hover:bg-opacity-90 transition-all shadow-sm">
+      <NuxtLink to="/admin/articles/create" class="bg-primary text-white px-6 py-3 rounded-full font-label-md flex items-center gap-2 hover:bg-opacity-90 transition-all shadow-sm">
         <span class="material-symbols-outlined">add</span> Tambah Artikel
-      </button>
+      </NuxtLink>
     </div>
 
     <div class="bg-white rounded-2xl border border-outline-variant overflow-hidden shadow-sm">
@@ -45,9 +45,9 @@
             </td>
             <td class="px-6 py-4 text-right">
               <div class="flex items-center justify-end gap-2">
-                <button class="w-8 h-8 rounded-full bg-surface-container-low text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors">
+                <NuxtLink :to="`/admin/articles/${article.id}/edit`" class="w-8 h-8 rounded-full bg-surface-container-low text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors">
                   <span class="material-symbols-outlined text-sm">edit</span>
-                </button>
+                </NuxtLink>
                 <button @click="deleteArticle(article.id)" class="w-8 h-8 rounded-full bg-surface-container-low text-error flex items-center justify-center hover:bg-error hover:text-white transition-colors">
                   <span class="material-symbols-outlined text-sm">delete</span>
                 </button>

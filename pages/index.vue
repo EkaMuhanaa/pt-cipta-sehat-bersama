@@ -2,10 +2,16 @@
   <div>
     <!-- B. HERO SECTION -->
     <section class="relative min-h-[calc(100vh-120px)] w-full flex items-center overflow-hidden">
-      <div class="absolute inset-0 z-0">
-        <div class="absolute inset-0 bg-primary mix-blend-multiply opacity-60"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent"></div>
-        <div class="w-full h-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAjLx2H9qjr4bTuCMCcpugbNEBTwBZCrT952oQQ5ZLYGzgGsY5NFWCtluQQVRbMpEQShYCLlhxEsHJcEQ0e4aDzt1bjSYEU9ouqCM9zryNOXUO91OP_Ub2BMYVfJ0nP8EI6WIAsmh5N21Ap0mPlzOElHyzRQoa04H7cHzvKqTblKGBy_XGVUBY9qHE0cCJDGig6v6gthcnWciUZbufz39Q49_VBeAO4i18Z7ADdtpikHBmB8Xi5puYQDg')"></div>
+      <div class="absolute inset-0 z-0 overflow-hidden">
+        <div class="absolute inset-0 bg-primary mix-blend-multiply opacity-60 z-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent z-10"></div>
+        <div 
+          v-for="(img, idx) in heroImages" 
+          :key="idx"
+          class="absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-1000 z-0" 
+          :class="activeHeroIndex === idx ? 'opacity-100' : 'opacity-0'"
+          :style="{ backgroundImage: `url('${img}')` }"
+        ></div>
       </div>
       <div class="relative z-10 max-w-container-max mx-auto px-margin-desktop w-full text-white">
         <div class="max-w-3xl">
@@ -17,28 +23,14 @@
           <p class="font-body-lg text-white/90 mb-10">Membangun kredibilitas layanan medis, reparasi &amp; kalibrasi alat kesehatan, serta pelatihan sertifikasi K3 bagi masyarakat dan mitra bisnis.</p>
           <div class="flex flex-wrap gap-4">
             <a class="pill-cta bg-secondary text-on-secondary px-8 py-4 rounded-full font-label-md flex items-center gap-3" href="https://wa.me/6282140009541">
-              <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">chat</span>
+              <svg viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 shrink-0" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
               Konsultasi via WhatsApp
             </a>
-            <button class="pill-cta border-2 border-white text-white px-8 py-4 rounded-full font-label-md hover:bg-white hover:text-primary transition-all">
+            <NuxtLink to="/layanan" class="pill-cta border-2 border-white text-white px-8 py-4 rounded-full font-label-md hover:bg-white hover:text-primary transition-all">
               Jelajahi Layanan
-            </button>
+            </NuxtLink>
           </div>
         </div>
-      </div>
-      <!-- Pagination & Video FAB -->
-      <div class="absolute bottom-12 left-margin-desktop z-10 flex items-center gap-6 font-label-md text-white opacity-80">
-        <span class="text-secondary-fixed font-bold border-b-2 border-secondary-fixed">01</span>
-        <span>02</span>
-        <span>03</span>
-      </div>
-      <div class="absolute bottom-12 right-margin-desktop z-10">
-        <button class="group relative flex items-center gap-4 text-white font-label-md">
-          <span class="opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0 transition-transform">Lihat Profil Perusahaan</span>
-          <div class="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
-          </div>
-        </button>
       </div>
     </section>
 
@@ -52,7 +44,7 @@
         <div class="flex flex-col md:flex-row gap-0 min-h-[500px] w-full overflow-hidden border-y border-white/10 mt-8">
           <!-- Pillar 1 -->
           <div class="brand-panel flex-1 p-8 flex flex-col justify-end group relative overflow-hidden border-r border-white/10 last:border-r-0">
-            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&q=80')"></div>
+            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" :style="{ backgroundImage: `url('${getSetting('home_hero_1', 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&q=80')}')` }"></div>
             <div class="absolute inset-0 bg-primary/80 group-hover:bg-primary/60 transition-colors duration-500"></div>
             <div class="absolute top-8 left-8 text-white/30 font-display-lg select-none z-10">01</div>
             <div class="relative z-10">
@@ -66,7 +58,7 @@
           </div>
           <!-- Pillar 2 -->
           <div class="brand-panel flex-1 p-8 flex flex-col justify-end group relative overflow-hidden border-r border-white/10 last:border-r-0">
-            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80')"></div>
+            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" :style="{ backgroundImage: `url('${getSetting('home_hero_2', 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80')}')` }"></div>
             <div class="absolute inset-0 bg-primary/80 group-hover:bg-primary/60 transition-colors duration-500"></div>
             <div class="absolute top-8 left-8 text-white/30 font-display-lg select-none z-10">02</div>
             <div class="relative z-10">
@@ -80,7 +72,7 @@
           </div>
           <!-- Pillar 3 -->
           <div class="brand-panel flex-1 p-8 flex flex-col justify-end group relative overflow-hidden border-r border-white/10 last:border-r-0">
-            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://images.unsplash.com/photo-1584308666744-24d5e1823ebf?auto=format&fit=crop&w=800&q=80')"></div>
+            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" :style="{ backgroundImage: `url('${getSetting('home_hero_3', 'https://images.unsplash.com/photo-1584308666744-24d5e1823ebf?auto=format&fit=crop&w=800&q=80')}')` }"></div>
             <div class="absolute inset-0 bg-primary/80 group-hover:bg-primary/60 transition-colors duration-500"></div>
             <div class="absolute top-8 left-8 text-white/30 font-display-lg select-none z-10">03</div>
             <div class="relative z-10">
@@ -94,7 +86,7 @@
           </div>
           <!-- Pillar 4 -->
           <div class="brand-panel flex-1 p-8 flex flex-col justify-end group relative overflow-hidden border-r border-white/10 last:border-r-0">
-            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80')"></div>
+            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" :style="{ backgroundImage: `url('${getSetting('home_hero_4', 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80')}')` }"></div>
             <div class="absolute inset-0 bg-primary/80 group-hover:bg-primary/60 transition-colors duration-500"></div>
             <div class="absolute top-8 left-8 text-white/30 font-display-lg select-none z-10">04</div>
             <div class="relative z-10">
@@ -155,7 +147,7 @@
           <div class="lg:w-5/12 relative">
             <div class="absolute -top-10 -right-10 w-40 h-40 opacity-20 pointer-events-none" style="background-image: radial-gradient(#025689 2px, transparent 2px); background-size: 20px 20px;"></div>
             <div class="relative rounded-2xl overflow-hidden shadow-2xl h-full min-h-[400px]">
-              <img alt="Professional Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABoaSpC5xovznSzEbHP1O_ItCJ5NHDpDK71mrBtaAvt18MuhWD2qWUbTSOre_54O-oEgGz02CuuBJNoN99JDdVd65a1adWauTWjStxtKwZOTEI3dTGVgwFET6WE0kWMxvXZbMIQGVYnBGsU1b2Lbpp_r5AiicG0Nqp3JvySAxdMeM1U9MIIXJtzIjSD2YipypDb14W_luhcbsqxrYpRcArhO-LBEJgDZkQQmN2nBp54r5YhUdWT5dnkA"/>
+              <img alt="Professional Profile" class="w-full h-full object-cover" :src="getSetting('about_leader_1', 'https://lh3.googleusercontent.com/aida-public/AB6AXuABoaSpC5xovznSzEbHP1O_ItCJ5NHDpDK71mrBtaAvt18MuhWD2qWUbTSOre_54O-oEgGz02CuuBJNoN99JDdVd65a1adWauTWjStxtKwZOTEI3dTGVgwFET6WE0kWMxvXZbMIQGVYnBGsU1b2Lbpp_r5AiicG0Nqp3JvySAxdMeM1U9MIIXJtzIjSD2YipypDb14W_luhcbsqxrYpRcArhO-LBEJgDZkQQmN2nBp54r5YhUdWT5dnkA')"/>
             </div>
             <div class="absolute -bottom-8 -left-8 bg-secondary text-white p-8 rounded-2xl shadow-lg">
               <div class="text-display-lg leading-none font-extrabold mb-1">10+</div>
@@ -215,9 +207,29 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
+
+const { data: settingsData } = await useFetch('/api/settings')
+const settings = settingsData.value?.data || {}
+
+const getSetting = (key, defaultUrl) => settings[key] || defaultUrl
+
+const heroImages = [
+  getSetting('home_hero_1', 'https://lh3.googleusercontent.com/aida-public/AB6AXuAjLx2H9qjr4bTuCMCcpugbNEBTwBZCrT952oQQ5ZLYGzgGsY5NFWCtluQQVRbMpEQShYCLlhxEsHJcEQ0e4aDzt1bjSYEU9ouqCM9zryNOXUO91OP_Ub2BMYVfJ0nP8EI6WIAsmh5N21Ap0mPlzOElHyzRQoa04H7cHzvKqTblKGBy_XGVUBY9qHE0cCJDGig6v6gthcnWciUZbufz39Q49_VBeAO4i18Z7ADdtpikHBmB8Xi5puYQDg'),
+  getSetting('home_hero_2', 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1920&q=80'),
+  getSetting('home_hero_3', 'https://images.unsplash.com/photo-1584308666744-24d5e1823ebf?auto=format&fit=crop&w=1920&q=80'),
+  getSetting('home_hero_4', 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1920&q=80')
+].filter(Boolean);
+
+const activeHeroIndex = ref(0)
 
 onMounted(() => {
+  if (heroImages.length > 1) {
+    setInterval(() => {
+      activeHeroIndex.value = (activeHeroIndex.value + 1) % heroImages.length
+    }, 5000)
+  }
+
   const observerOptions = {
     threshold: 0.1
   };

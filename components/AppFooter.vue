@@ -20,11 +20,11 @@
         <div>
           <h4 class="font-label-md text-primary mb-8 uppercase tracking-widest"><b>Tautan Cepat</b></h4>
           <ul class="space-y-4">
-            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary transition-colors" to="/tentang-kami">Tentang Kami</NuxtLink></li>
-            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary transition-colors" to="/layanan">Layanan Medis</NuxtLink></li>
-            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary transition-colors" to="/layanan">Kalibrasi Alkes</NuxtLink></li>
-            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary transition-colors" to="/layanan">Pelatihan K3</NuxtLink></li>
-            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary transition-colors" to="/artikel">Artikel Kesehatan</NuxtLink></li>
+            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/tentang-kami">Tentang Kami</NuxtLink></li>
+            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/layanan">Layanan Medis</NuxtLink></li>
+            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/layanan">Kalibrasi Alkes</NuxtLink></li>
+            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/layanan">Pelatihan K3</NuxtLink></li>
+            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/artikel">Artikel Kesehatan</NuxtLink></li>
           </ul>
         </div>
 
@@ -32,10 +32,10 @@
         <div>
           <h4 class="font-label-md text-primary mb-8 uppercase tracking-widest"><b>Legalitas</b></h4>
           <ul class="space-y-4">
-            <li><a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Syarat &amp; Ketentuan</a></li>
-            <li><a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Kebijakan Privasi</a></li>
-            <li><a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Sertifikasi ISO</a></li>
-            <li><a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Lisensi Operasional</a></li>
+            <li><span class="font-body-md text-on-surface-variant">Syarat &amp; Ketentuan</span></li>
+            <li><span class="font-body-md text-on-surface-variant">Kebijakan Privasi</span></li>
+            <li><span class="font-body-md text-on-surface-variant">Sertifikasi ISO</span></li>
+            <li><span class="font-body-md text-on-surface-variant">Lisensi Operasional</span></li>
           </ul>
         </div>
 

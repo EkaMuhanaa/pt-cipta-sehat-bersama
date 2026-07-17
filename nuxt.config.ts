@@ -1,6 +1,6 @@
 // Ganti URL ini dengan URL Ngrok Anda saat akan push ke Vercel!
 // Contoh: const API_URL = 'https://1234-abcd.ngrok-free.app'
-const API_URL = process.env.API_URL || 'https://shivering-implode-elsewhere.ngrok-free.dev'
+const API_URL = process.env.API_URL || 'http://localhost:4000'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -20,6 +20,7 @@ export default defineNuxtConfig({
   },
   css: ['~/assets/css/main.css'],
   routeRules: {
-    '/api/**': { proxy: `${API_URL}/api/**` }
+    '/api/**': { proxy: `${API_URL}/api/**` },
+    '/uploads/**': { proxy: `${API_URL}/uploads/**` }
   }
 })
