@@ -128,18 +128,6 @@
                   <p class="font-label-sm text-outline mb-1 uppercase">NIB OSS</p>
                   <p class="font-label-md text-on-surface">0707260044615</p>
                 </div>
-                <div>
-                  <p class="font-label-sm text-outline mb-1 uppercase">Direktur Utama</p>
-                  <p class="font-label-md text-on-surface">Ahmad Fachri Romdhoni</p>
-                </div>
-                <div>
-                  <p class="font-label-sm text-outline mb-1 uppercase">Komisaris</p>
-                  <p class="font-label-md text-on-surface">Marsugi Rahmat Sukiyat</p>
-                </div>
-              </div>
-              <div class="mt-6 pt-6 border-t border-outline-variant">
-                <p class="font-label-sm text-outline mb-1 uppercase">NPWP Perusahaan</p>
-                <p class="font-label-md text-on-surface">10.000.000.1-024.8572</p>
               </div>
             </div>
           </div>

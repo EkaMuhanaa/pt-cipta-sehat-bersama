@@ -105,48 +105,6 @@
         </div>
       </div>
     </section>
-
-    <!-- Leadership Section -->
-    <section class="py-24 bg-surface-container transition-all duration-700 opacity-0 translate-y-10 reveal-on-scroll">
-      <div class="max-w-container-max mx-auto px-margin-desktop">
-        <div class="flex flex-col md:flex-row gap-16 items-center">
-          <div class="flex-1">
-            <h2 class="font-headline-lg text-headline-lg text-on-background mb-8">Struktur Organisasi</h2>
-            <div class="space-y-8">
-              <!-- Leader Card -->
-              <div class="flex items-center gap-6 bg-white p-6 rounded-2xl shadow-sm border border-outline-variant border-l-4 border-l-primary">
-                <div class="w-20 h-20 bg-surface-container-high rounded-full overflow-hidden flex-shrink-0">
-                  <span class="material-symbols-outlined text-5xl text-outline-variant flex items-center justify-center h-full">person</span>
-                </div>
-                <div>
-                  <h4 class="font-headline-md text-headline-md text-primary">Ahmad Fachri Romdhoni</h4>
-                  <p class="text-secondary font-label-md text-label-md uppercase tracking-wider">Direktur Utama</p>
-                </div>
-              </div>
-              <!-- Leader Card -->
-              <div class="flex items-center gap-6 bg-white p-6 rounded-2xl shadow-sm border border-outline-variant border-l-4 border-l-secondary">
-                <div class="w-20 h-20 bg-surface-container-high rounded-full overflow-hidden flex-shrink-0">
-                  <span class="material-symbols-outlined text-5xl text-outline-variant flex items-center justify-center h-full">person</span>
-                </div>
-                <div>
-                  <h4 class="font-headline-md text-headline-md text-primary">Marsugi Rahmat Sukiyat</h4>
-                  <p class="text-secondary font-label-md text-label-md uppercase tracking-wider">Komisaris</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="flex-1 grid grid-cols-2 gap-4 group">
-            <div class="rounded-2xl overflow-hidden h-64 shadow-lg transition-all duration-500 group-hover:scale-90 hover:!scale-110 hover:z-10 cursor-pointer">
-              <img class="w-full h-full object-cover" :src="getSetting('about_leader_1', 'https://lh3.googleusercontent.com/aida-public/AB6AXuDLHf3AWVTA99J0g-1Q-wGFYCZhw8_KAdSeOLP9QXH-RwFByVmIlpQyTuctYpTiqJFHmip_SOM1vgBCipKewpBLAyVyfm8_R52m8IergV_y_O-wMDDbaYXjuGNLm2hGhUZFkL3k04HNa8ISpeBf8-gnq_iV9l4_zGno4fg85nl6YCDRhnhcrvbOr7iaXCx7jNZHCyTMeXaPs4w12vJs3BNdsbklqJbhcQpBhbZtbu-5Z6aTBH4pzDvnFA')"/>
-            </div>
-            <div class="rounded-2xl overflow-hidden h-64 mt-8 shadow-lg transition-all duration-500 group-hover:scale-90 hover:!scale-110 hover:z-10 cursor-pointer">
-              <img class="w-full h-full object-cover" :src="getSetting('about_leader_2', 'https://lh3.googleusercontent.com/aida-public/AB6AXuB4t8DQhi3V3X9xdJEZREl_WjDVtpb0ImUuYXKOLTuBvEcWAqMZPSE4oCf6J8HChQA_J2NabDVH-_gN9XdsUZzn7iiacLA-nybs7nvv3mAHNQfrwOW3iBBtsET93WUSZNNnmX1jLcgEDx8ulZthXQ6RXZOteh38q-z1GZ_4Y0nXuo28Rq9DrASEiA5cZv77JBDWVDBWYgqsJTWN8xe1Ju6gZ1v-seiePeZL3MnnvMP87kZFwHQO-FTZog')"/>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Legality & History Section -->
     <section class="py-24 transition-all duration-700 opacity-0 translate-y-10 reveal-on-scroll">
       <div class="max-w-container-max mx-auto px-margin-desktop">
