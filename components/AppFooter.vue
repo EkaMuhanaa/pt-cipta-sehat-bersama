@@ -20,11 +20,11 @@
         <div>
           <h4 class="font-label-md text-primary mb-8 uppercase tracking-widest"><b>Tautan Cepat</b></h4>
           <ul class="space-y-4">
+            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/">Beranda</NuxtLink></li>
             <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/tentang-kami">Tentang Kami</NuxtLink></li>
-            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/layanan">Layanan Medis</NuxtLink></li>
-            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/layanan">Kalibrasi Alkes</NuxtLink></li>
-            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/layanan">Pelatihan K3</NuxtLink></li>
-            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/artikel">Artikel Kesehatan</NuxtLink></li>
+            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/layanan">Layanan</NuxtLink></li>
+            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/layanan">Edukasi &amp; K3</NuxtLink></li>
+            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/artikel">Artikel</NuxtLink></li>
           </ul>
         </div>
 
