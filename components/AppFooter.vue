@@ -23,7 +23,7 @@
             <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/">Beranda</NuxtLink></li>
             <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/tentang-kami">Tentang Kami</NuxtLink></li>
             <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/layanan">Layanan</NuxtLink></li>
-            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/layanan">Edukasi &amp; K3</NuxtLink></li>
+            <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/edukasi-k3">Edukasi &amp; K3</NuxtLink></li>
             <li><NuxtLink class="font-body-md text-on-surface-variant hover:text-primary hover:font-bold transition-all" to="/artikel">Artikel</NuxtLink></li>
           </ul>
         </div>
