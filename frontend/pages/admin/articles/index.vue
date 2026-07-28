@@ -73,7 +73,7 @@ const isLoading = ref(true)
 const fetchArticles = async () => {
   isLoading.value = true
   try {
-    const res = await $fetch('/api/articles')
+    const res = await $fetch('/api/articles', { headers: { Authorization: `Bearer ${useCookie("auth_token").value}` } })
     if (res.success) {
       articles.value = res.data
     }

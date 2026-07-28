@@ -107,7 +107,7 @@ const settings = ref({ ...defaultSettings })
 const fetchSettings = async () => {
   isLoading.value = true
   try {
-    const res = await $fetch('/api/settings')
+    const res = await $fetch('/api/settings', { headers: { Authorization: `Bearer ${useCookie("auth_token").value}` } })
     if (res.success && res.data) {
       // Merge with defaults
       settings.value = { ...defaultSettings, ...res.data }
@@ -123,10 +123,10 @@ const saveSettings = async () => {
   isSaving.value = true
   message.value = ''
   try {
-    const res = await $fetch('/api/settings', {
+    const res = await $fetch('/api/settings', { 
       method: 'PUT',
       body: settings.value
-    })
+    , headers: { Authorization: `Bearer ${useCookie("auth_token").value}` } })
     if (res.success) {
       message.value = 'Pengaturan berhasil disimpan!'
       messageType.value = 'success'

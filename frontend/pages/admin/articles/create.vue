@@ -143,10 +143,10 @@ const handleFileUpload = async (event) => {
   formData.append('image', file)
   
   try {
-    const res = await $fetch('/api/upload', {
+    const res = await $fetch('/api/upload', { 
       method: 'POST',
       body: formData
-    })
+    , headers: { Authorization: `Bearer ${useCookie("auth_token").value}` } })
     
     if (res.success) {
       // res.url might be relative like "/uploads/...", we should prefix with API_URL if needed.
@@ -170,10 +170,10 @@ const generateSlug = () => {
 const submitArticle = async () => {
   isLoading.value = true
   try {
-    const res = await $fetch('/api/articles', {
+    const res = await $fetch('/api/articles', { 
       method: 'POST',
       body: form.value
-    })
+    , headers: { Authorization: `Bearer ${useCookie("auth_token").value}` } })
     
     if (res.success) {
       alert('Artikel berhasil ditambahkan!')

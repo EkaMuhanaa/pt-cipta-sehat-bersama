@@ -4,14 +4,32 @@ import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
 import multer from 'multer';
 import path from 'path';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
+
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_do_not_use_in_prod';
 
 const app = express();
 const prisma = new PrismaClient();
 
 app.use(cors());
 app.use(express.json());
+
+// Middleware to protect routes
+const authenticateToken = (req: any, res: any, next: any) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'Unauthorized' });
+
+  jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
+    if (err) return res.status(403).json({ message: 'Forbidden' });
+    req.user = user;
+    next();
+  });
+};
+
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Configure Multer for File Uploads
@@ -27,7 +45,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // --- File Upload Route ---
-app.post('/api/upload', upload.single('image'), (req, res) => {
+app.post('/api/upload', authenticateToken, upload.single('image'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
@@ -52,12 +70,17 @@ app.post('/api/auth/login', async (req, res) => {
       where: { email }
     });
 
-    if (!user || user.password !== password) {
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // In a real app, generate JWT here. For now we just return success.
-    res.json({ success: true, user: { id: user.id, name: user.name, email: user.email } });
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '24h' });
+    res.json({ success: true, token, user: { id: user.id, name: user.name, email: user.email } });
   } catch (error: any) {
     res.status(500).json({ message: error.message || 'Login failed' });
   }
@@ -82,7 +105,7 @@ app.get('/api/articles', async (req, res) => {
   }
 });
 
-app.post('/api/articles', async (req, res) => {
+app.post('/api/articles', authenticateToken, async (req: any, res: any) => {
   try {
     const body = req.body;
     if (!body.title || !body.slug || !body.content || !body.category) {
@@ -91,10 +114,11 @@ app.post('/api/articles', async (req, res) => {
 
     let user = await prisma.user.findFirst();
     if (!user) {
+      const hashedPassword = await bcrypt.hash('hashedpassword', 10);
       user = await prisma.user.create({
         data: {
           email: 'admin@ciptasehat.com',
-          password: 'hashedpassword',
+          password: hashedPassword,
           name: 'Admin'
         }
       });
@@ -119,7 +143,7 @@ app.post('/api/articles', async (req, res) => {
   }
 });
 
-app.put('/api/articles/:id', async (req, res) => {
+app.put('/api/articles/:id', authenticateToken, async (req: any, res: any) => {
   try {
     const { id } = req.params;
     const body = req.body;
@@ -141,7 +165,7 @@ app.put('/api/articles/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/articles/:id', async (req, res) => {
+app.delete('/api/articles/:id', authenticateToken, async (req: any, res: any) => {
   try {
     const { id } = req.params;
     await prisma.article.delete({
@@ -165,7 +189,7 @@ app.get('/api/services', async (req, res) => {
   }
 });
 
-app.post('/api/services', async (req, res) => {
+app.post('/api/services', authenticateToken, async (req: any, res: any) => {
   try {
     const { title, description, icon, order } = req.body;
     const service = await prisma.service.create({
@@ -182,7 +206,7 @@ app.post('/api/services', async (req, res) => {
   }
 });
 
-app.put('/api/services/:id', async (req, res) => {
+app.put('/api/services/:id', authenticateToken, async (req: any, res: any) => {
   try {
     const { id } = req.params;
     const { title, description, icon, order } = req.body;
@@ -196,7 +220,7 @@ app.put('/api/services/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/services/:id', async (req, res) => {
+app.delete('/api/services/:id', authenticateToken, async (req: any, res: any) => {
   try {
     const { id } = req.params;
     await prisma.service.delete({ where: { id } });
@@ -221,7 +245,7 @@ app.get('/api/settings', async (req, res) => {
   }
 });
 
-app.put('/api/settings', async (req, res) => {
+app.put('/api/settings', authenticateToken, async (req: any, res: any) => {
   try {
     // req.body should be an object of key-value pairs to update
     const settings = req.body;

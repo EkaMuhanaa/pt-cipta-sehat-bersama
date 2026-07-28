@@ -24,3 +24,6 @@ logs
 !.env.example
 
 /generated/prisma
+
+*.db
+*.sqlite

@@ -46,7 +46,7 @@ const stats = ref({
 
 onMounted(async () => {
   try {
-    const res = await $fetch('/api/articles')
+    const res = await $fetch('/api/articles', { headers: { Authorization: `Bearer ${useCookie("auth_token").value}` } })
     if (res.success) {
       stats.value.articles = res.data.length
     }

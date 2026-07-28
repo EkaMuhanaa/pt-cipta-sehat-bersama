@@ -148,10 +148,10 @@ const handleFileUpload = async (event) => {
   formData.append('image', file)
   
   try {
-    const res = await $fetch('/api/upload', {
+    const res = await $fetch('/api/upload', { 
       method: 'POST',
       body: formData
-    })
+    , headers: { Authorization: `Bearer ${useCookie("auth_token").value}` } })
     
     if (res.success) {
       form.value.imageUrl = res.url

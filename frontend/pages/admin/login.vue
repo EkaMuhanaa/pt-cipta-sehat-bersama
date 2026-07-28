@@ -75,6 +75,8 @@ const handleLogin = async () => {
     })
     
     if (res.success) {
+      const token = useCookie('auth_token', { maxAge: 60 * 60 * 24 })
+      token.value = res.token
       router.push('/admin')
     }
   } catch (err) {
