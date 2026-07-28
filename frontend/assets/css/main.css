@@ -1,0 +1,68 @@
+
+body {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.text-gradient-primary {
+    background: linear-gradient(135deg, #025689 0%, #003e65 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-mesh {
+    background-image: radial-gradient(at 0% 0%, hsla(202, 97%, 27%, 0.05) 0, transparent 50%), 
+                      radial-gradient(at 100% 100%, hsla(106, 61%, 41%, 0.05) 0, transparent 50%);
+}
+
+#main-nav {
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
+}
+#main-nav.scrolled {
+    background-color: #025689;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.brand-panel {
+    transition: flex 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    position: relative;
+}
+.brand-panel:hover {
+    flex: 1.6;
+}
+
+.brand-desc {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.brand-panel:hover .brand-desc {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.pill-cta {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+.pill-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.pill-cta:active {
+    transform: scale(0.95);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
