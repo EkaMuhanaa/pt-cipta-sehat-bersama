@@ -1,0 +1,436 @@
+name: Deploy frontend production
+
+run-name: Frontend production - ${{ github.event.client_payload.source || inputs.reason || github.event_name }}
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - backend/**
+      - frontend/**
+      - .github/workflows/deploy-frontend-production.yml
+  repository_dispatch:
+    types: [content-published]
+  schedule:
+    - cron: '15 17 * * *'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Reason for this frontend rebuild
+        required: false
+        default: manual
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-production
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NUXT_PUBLIC_SITE_URL: https://kliniksehatmedika.com
+      NUXT_PUBLIC_API_BASE: https://api.kliniksehatmedika.com/api
+      NUXT_PUBLIC_STORAGE_BASE: https://api.kliniksehatmedika.com/storage/
+      SEO_REQUIRE_DYNAMIC_CONTENT: 'true'
+      SSH_HOST: 46.202.138.100
+      SSH_PORT: '65002'
+      SSH_USER: u818194417
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Detect backend changes
+        id: backend_changes
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          if [ "$GITHUB_EVENT_NAME" != 'push' ]; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          BEFORE_SHA="${{ github.event.before }}"
+
+          if ! git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null; then
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if git diff --quiet "$BEFORE_SHA" "$GITHUB_SHA" -- \
+            backend \
+            .github/workflows/deploy-frontend-production.yml; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Test SEO regression checker
+        working-directory: frontend
+        run: npm run test:seo
+
+      - name: Type-check frontend
+        working-directory: frontend
+        run: npm run typecheck
+
+      - name: Generate production frontend
+        working-directory: frontend
+        run: npm run build
+
+      - name: Check generated SEO output
+        working-directory: frontend
+        run: npm run check:seo
+
+      - name: Validate static output
+        run: |
+          set -Eeuo pipefail
+
+          test -f frontend/.output/public/index.html
+          test -f frontend/.output/public/.htaccess
+          test -f frontend/.output/public/sitemap.xml
+          test ! -e frontend/.output/public/api
+
+      - name: Pack static release
+        run: |
+          set -Eeuo pipefail
+          tar -czf frontend-release.tar.gz -C frontend/.output/public .
+          sha256sum frontend-release.tar.gz
+
+      - name: Configure deployment SSH key
+        env:
+          HOSTINGER_SSH_PRIVATE_KEY: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
+          HOSTINGER_KNOWN_HOSTS: ${{ secrets.HOSTINGER_KNOWN_HOSTS }}
+        run: |
+          set -Eeuo pipefail
+
+          test -n "$HOSTINGER_SSH_PRIVATE_KEY"
+          test -n "$HOSTINGER_KNOWN_HOSTS"
+
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$HOSTINGER_SSH_PRIVATE_KEY" > "$HOME/.ssh/hostinger_deploy"
+          printf '%s\n' "$HOSTINGER_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/hostinger_deploy" "$HOME/.ssh/known_hosts"
+
+      - name: Deploy backend changes and migrations
+        if: steps.backend_changes.outputs.changed == 'true'
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -Eeuo pipefail
+
+          ssh \
+            -i "$HOME/.ssh/hostinger_deploy" \
+            -p "$SSH_PORT" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            "$SSH_USER@$SSH_HOST" \
+            "EXPECTED_SHA='$EXPECTED_SHA' bash -se" <<'REMOTE'
+          set -Eeuo pipefail
+
+          DOMAIN_ROOT="/home/u818194417/domains/kliniksehatmedika.com"
+          SOURCE_ROOT="$DOMAIN_ROOT/source"
+          BACKEND_ROOT="$SOURCE_ROOT/backend"
+          MAIN_PUBLIC="$DOMAIN_ROOT/public_html"
+          API_PUBLIC="$MAIN_PUBLIC/api"
+          MAINTENANCE_ACTIVE=0
+
+          restore_availability() {
+            status=$?
+            trap - EXIT
+
+            if [ "$MAINTENANCE_ACTIVE" -eq 1 ]; then
+              echo 'Restoring API availability after backend deployment exit.'
+              set +e
+              cd "$BACKEND_ROOT"
+              php artisan up
+            fi
+
+            exit "$status"
+          }
+
+          trap restore_availability EXIT
+
+          test "$(realpath "$DOMAIN_ROOT")" = "$DOMAIN_ROOT"
+          test "$(realpath "$SOURCE_ROOT")" = "$SOURCE_ROOT"
+          test "$(realpath "$MAIN_PUBLIC")" = "$MAIN_PUBLIC"
+          test -d "$BACKEND_ROOT"
+          test -d "$API_PUBLIC"
+          test -f "$API_PUBLIC/index.php"
+
+          cd "$SOURCE_ROOT"
+
+          REMOTE_STATUS="$(git status --porcelain --untracked-files=all)"
+          UNEXPECTED_STATUS="$(
+            printf '%s\n' "$REMOTE_STATUS" |
+              grep -Ev '^\?\? backend/\.env\.before-frontend-trigger-[0-9]{8}-[0-9]{6}$' ||
+              true
+          )"
+
+          if [ -n "$UNEXPECTED_STATUS" ]; then
+            echo 'Remote source working tree is not clean; refusing deployment.' >&2
+            printf '%s\n' "$UNEXPECTED_STATUS"
+            exit 1
+          fi
+
+          test "$(git branch --show-current)" = 'main'
+
+          git fetch origin main
+
+          REMOTE_SHA="$(git rev-parse origin/main)"
+          CURRENT_SHA="$(git rev-parse HEAD)"
+
+          if [ "$REMOTE_SHA" != "$EXPECTED_SHA" ]; then
+            echo "origin/main moved from expected commit $EXPECTED_SHA to $REMOTE_SHA; refusing an ambiguous release." >&2
+            exit 1
+          fi
+
+          if ! git merge-base --is-ancestor "$CURRENT_SHA" "$EXPECTED_SHA"; then
+            echo 'Remote source cannot be fast-forwarded to the expected commit.' >&2
+            exit 1
+          fi
+
+          cd "$BACKEND_ROOT"
+          MAINTENANCE_ACTIVE=1
+          php artisan down --retry=60
+
+          cd "$SOURCE_ROOT"
+          git merge --ff-only "$EXPECTED_SHA"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+
+          cd "$BACKEND_ROOT"
+          composer2 install \
+            --no-dev \
+            --prefer-dist \
+            --optimize-autoloader \
+            --no-interaction \
+            --no-scripts
+
+          php artisan package:discover --ansi
+          php artisan filament:upgrade
+          php artisan migrate --force
+
+          cp -a "$BACKEND_ROOT/public/." "$API_PUBLIC/"
+          cp "$BACKEND_ROOT/deploy/hostinger/index.php" "$API_PUBLIC/index.php"
+
+          sed -i "s#dirname(__DIR__).'/backend'#dirname(__DIR__, 2).'/source/backend'#" \
+            "$API_PUBLIC/index.php"
+
+          grep -Fq "dirname(__DIR__, 2).'/source/backend'" "$API_PUBLIC/index.php"
+
+          php artisan optimize:clear
+          php artisan optimize
+          php artisan up
+          MAINTENANCE_ACTIVE=0
+
+          curl --fail --silent --show-error --output /dev/null \
+            https://api.kliniksehatmedika.com/
+          curl --fail --silent --show-error --output /dev/null \
+            https://api.kliniksehatmedika.com/up
+          curl --fail --silent --show-error --output /dev/null \
+            https://api.kliniksehatmedika.com/admin/login
+
+          trap - EXIT
+          REMOTE
+
+      - name: Upload static release
+        run: |
+          set -Eeuo pipefail
+          REMOTE_ARCHIVE="frontend-release-${GITHUB_RUN_ID}.tar.gz"
+
+          scp \
+            -i "$HOME/.ssh/hostinger_deploy" \
+            -P "$SSH_PORT" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            frontend-release.tar.gz \
+            "$SSH_USER@$SSH_HOST:~/$REMOTE_ARCHIVE"
+
+          echo "REMOTE_ARCHIVE=$REMOTE_ARCHIVE" >> "$GITHUB_ENV"
+
+      - name: Deploy release and run smoke tests
+        run: |
+          set -Eeuo pipefail
+
+          ssh \
+            -i "$HOME/.ssh/hostinger_deploy" \
+            -p "$SSH_PORT" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            "$SSH_USER@$SSH_HOST" \
+            "REMOTE_ARCHIVE='$REMOTE_ARCHIVE' bash -se" <<'REMOTE'
+          set -Eeuo pipefail
+
+          MAIN_PUBLIC="/home/u818194417/domains/kliniksehatmedika.com/public_html"
+          ARCHIVE="$HOME/$REMOTE_ARCHIVE"
+          RELEASES="$HOME/releases"
+          STAMP="$(date +%Y%m%d-%H%M%S)"
+          STAGING="$(mktemp -d "$HOME/frontend-staging.XXXXXX")"
+          BACKUP="$RELEASES/frontend-before-$STAMP.tar.gz"
+          DEPLOY_STARTED=0
+
+          rollback_and_cleanup() {
+            status=$?
+            trap - EXIT
+
+            if [ "$status" -ne 0 ] && [ "$DEPLOY_STARTED" -eq 1 ]; then
+              echo 'Deployment failed; restoring the previous frontend.' >&2
+              set +e
+              find "$MAIN_PUBLIC" -mindepth 1 -maxdepth 1 ! -name api \
+                -exec rm -rf -- {} +
+              tar -xzf "$BACKUP" -C "$MAIN_PUBLIC"
+            fi
+
+            rm -rf -- "$STAGING"
+            rm -f -- "$ARCHIVE"
+            exit "$status"
+          }
+
+          trap rollback_and_cleanup EXIT
+
+          test -f "$ARCHIVE"
+          test -d "$MAIN_PUBLIC/api"
+          test "$(realpath "$MAIN_PUBLIC")" = "$MAIN_PUBLIC"
+
+          ARCHIVE_ENTRIES="$(tar -tzf "$ARCHIVE")"
+          grep -Fxq './index.html' <<< "$ARCHIVE_ENTRIES"
+          grep -Fxq './.htaccess' <<< "$ARCHIVE_ENTRIES"
+          grep -Fxq './sitemap.xml' <<< "$ARCHIVE_ENTRIES"
+
+          if grep -Eq '^\./api(/|$)' <<< "$ARCHIVE_ENTRIES"; then
+            echo 'Frontend archive unexpectedly contains an api directory.' >&2
+            exit 1
+          fi
+
+          mkdir -p "$RELEASES"
+          tar -xzf "$ARCHIVE" -C "$STAGING"
+
+          test -f "$STAGING/index.html"
+          test -f "$STAGING/.htaccess"
+          test -f "$STAGING/sitemap.xml"
+          test ! -e "$STAGING/api"
+
+          tar -czf "$BACKUP" \
+            --exclude='./api' \
+            -C "$MAIN_PUBLIC" .
+
+          DEPLOY_STARTED=1
+
+          find "$MAIN_PUBLIC" -mindepth 1 -maxdepth 1 ! -name api \
+            -exec rm -rf -- {} +
+
+          cp -a "$STAGING/." "$MAIN_PUBLIC/"
+
+          test -f "$MAIN_PUBLIC/index.html"
+          test -f "$MAIN_PUBLIC/.htaccess"
+          test -f "$MAIN_PUBLIC/sitemap.xml"
+          test -f "$MAIN_PUBLIC/api/index.php"
+
+          assert_redirect() {
+            source_url="$1"
+            expected_location="$2"
+            response="$(curl --silent --show-error --output /dev/null \
+              --write-out '%{http_code} %{redirect_url}' \
+              "$source_url")"
+
+            if [ "$response" != "301 $expected_location" ]; then
+              echo "Expected '$source_url' to return '301 $expected_location'; received '$response'." >&2
+              return 1
+            fi
+          }
+
+          assert_redirect \
+            http://kliniksehatmedika.com/ \
+            https://kliniksehatmedika.com/
+          assert_redirect \
+            https://www.kliniksehatmedika.com/ \
+            https://kliniksehatmedika.com/
+          assert_redirect \
+            https://kliniksehatmedika.com/index.html \
+            https://kliniksehatmedika.com/
+
+          LIVE_SITEMAP="$STAGING/live-sitemap.xml"
+          sitemap_status="$(curl --silent --show-error \
+            --output "$LIVE_SITEMAP" \
+            --write-out '%{http_code}' \
+            https://kliniksehatmedika.com/sitemap.xml)"
+
+          if [ "$sitemap_status" != '200' ]; then
+            echo "Expected the live sitemap to return 200; received '$sitemap_status'." >&2
+            exit 1
+          fi
+
+          sitemap_urls="$(sed -n \
+            's:.*<loc>[[:space:]]*\([^<]*\)[[:space:]]*</loc>.*:\1:p' \
+            "$LIVE_SITEMAP")"
+
+          if [ -z "$sitemap_urls" ]; then
+            echo 'The live sitemap does not contain any <loc> URL.' >&2
+            exit 1
+          fi
+
+          printf '%s\n' "$sitemap_urls" | while IFS= read -r sitemap_url; do
+            page_status="$(curl --silent --show-error \
+              --output /dev/null \
+              --write-out '%{http_code}' \
+              "$sitemap_url")"
+
+            if [ "$page_status" != '200' ]; then
+              echo "Sitemap URL '$sitemap_url' returned '$page_status' instead of 200." >&2
+              exit 1
+            fi
+          done
+
+          GOOGLEBOT_HOME="$STAGING/googlebot-home.html"
+          googlebot_status="$(curl --silent --show-error \
+            --user-agent 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' \
+            --output "$GOOGLEBOT_HOME" \
+            --write-out '%{http_code}' \
+            https://kliniksehatmedika.com/)"
+
+          if [ "$googlebot_status" != '200' ]; then
+            echo "Googlebot homepage request returned '$googlebot_status' instead of 200." >&2
+            exit 1
+          fi
+
+          if ! grep -Eiq '<h1([[:space:]>])' "$GOOGLEBOT_HOME"; then
+            echo 'Googlebot homepage response does not contain a rendered <h1>.' >&2
+            exit 1
+          fi
+
+          if ! grep -Fqi 'Klinik Sehat Medika' "$GOOGLEBOT_HOME"; then
+            echo 'Googlebot homepage response does not contain the clinic brand.' >&2
+            exit 1
+          fi
+
+          curl --fail --silent --show-error --location --output /dev/null \
+            https://kliniksehatmedika.com/
+          curl --fail --silent --show-error --location --output /dev/null \
+            https://kliniksehatmedika.com/sitemap.xml
+          curl --fail --silent --show-error --location --output /dev/null \
+            https://api.kliniksehatmedika.com/
+
+          DEPLOY_STARTED=0
+          REMOTE
