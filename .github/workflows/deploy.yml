@@ -182,10 +182,9 @@ jobs:
               status=$?
               trap - EXIT
             
-              if [ "$MAINTENANCE_ACTIVE" -eq 1 ]; then
-                set +e
+              if [ -n "${MAINTENANCE_ACTIVE-}" ] && [ -d "$BACKEND_ROOT" ] && [ -f "$BACKEND_ROOT/artisan" ]; then
                 cd "$BACKEND_ROOT"
-                php artisan up
+                php artisan up || true
               fi
             
               exit "$status"
@@ -194,8 +193,10 @@ jobs:
             trap restore_availability EXIT
             
             cd "$BACKEND_ROOT"
-            MAINTENANCE_ACTIVE=1
-            php artisan down --retry=60
+            if [ -f artisan ]; then
+              MAINTENANCE_ACTIVE=1
+              php artisan down --retry=60
+            fi
             
             cd "$SOURCE_ROOT"
             git merge --ff-only "$EXPECTED_SHA"
