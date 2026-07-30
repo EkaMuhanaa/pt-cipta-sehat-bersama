@@ -54,7 +54,7 @@ jobs:
         working-directory: ./frontend
         run: |
           npm ci
-          npm run build
+          npm run generate
           
           # Validasi Nuxt output
           set -Eeuo pipefail
