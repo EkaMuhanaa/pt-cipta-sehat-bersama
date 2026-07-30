@@ -5,9 +5,6 @@
       <div class="relative z-10 max-w-container-max mx-auto px-margin-desktop">
         <div class="flex flex-col md:flex-row items-center gap-16">
           <div class="flex-1 space-y-6">
-            <span class="inline-block py-1 px-4 bg-primary/10 text-primary rounded-full font-label-md text-label-md">
-              Membangun Indonesia Sehat
-            </span>
             <h1 class="font-display-lg text-display-lg text-slate-800 leading-tight">
               Dedikasi Kami untuk <span class="text-secondary">Kesehatan &amp; Keselamatan</span>
             </h1>
@@ -16,7 +13,7 @@
             </p>
           </div>
           <div class="flex-1 relative">
-            <div class="rounded-xl overflow-hidden shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-500">
+            <div class="rounded-xl overflow-hidden shadow-2xl">
               <img class="w-full aspect-video object-cover" :src="getSetting('about_hero', 'https://lh3.googleusercontent.com/aida-public/AB6AXuCoasd8kUoZUnGRtRe06cjVOLpKL-i1dc5w9jYHcPoKYqkB1PKHd8BV750td68Tt1rjsF03kQr_BGpEZTLvpgetQxAd6JXewoMq0ZDNO-PoLONxqvOBsz9hNNkYhfos04cyGu9TwPTNZAJuuOky62-WIETCYkraYvMR-OCphgannLCw8TuYvMqZhGwVjWB8Bw9E4_a-F63ZOQ0xfhvaEBx7SeWO2SnOmrCh077EtmUQHAv9Fiwo_k0OBw')"/>
             </div>
           </div>
@@ -43,7 +40,7 @@
             </div>
           </div>
           <!-- Stats Card -->
-          <div class="bg-primary p-12 rounded-2xl text-white flex flex-col justify-center items-center text-center space-y-4 shadow-xl transform md:rotate-2 hover:rotate-0 transition-all duration-500">
+          <div class="bg-primary p-12 rounded-2xl text-white flex flex-col justify-center items-center text-center space-y-4 shadow-xl">
             <span class="text-6xl font-bold">100%</span>
             <p class="font-label-md text-label-md uppercase tracking-widest opacity-80">Standar Kualitas</p>
             <p class="font-body-md text-body-md">Sertifikasi internasional dalam setiap layanan medis kami.</p>
@@ -173,40 +170,39 @@
           <p class="text-body-md font-body-md text-on-surface-variant max-w-2xl mx-auto">Kami siap melayani kebutuhan informasi dan konsultasi medis Anda setiap hari kerja.</p>
         </div>
         
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-stretch">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
           <!-- Call Center Info -->
-          <div class="lg:col-span-1 space-y-8 bg-white p-8 rounded-2xl shadow-lg border border-outline-variant relative overflow-hidden flex flex-col justify-center">
-            <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full z-0"></div>
-            <div class="relative z-10">
-              <div class="flex items-start gap-4 mb-8">
-                <div class="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center flex-shrink-0">
+          <div class="lg:col-span-4 bg-white p-8 lg:p-10 rounded-xl shadow-sm border border-outline-variant relative overflow-hidden flex flex-col justify-center transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+            <div class="relative z-10 space-y-10">
+              <div class="flex items-start gap-5">
+                <div class="w-12 h-12 bg-primary/10 text-primary rounded-lg flex items-center justify-center flex-shrink-0">
                   <span class="material-symbols-outlined text-2xl">support_agent</span>
                 </div>
-                <div>
-                  <h4 class="font-headline-md text-headline-md text-on-background mb-1">Call Center</h4>
-                  <p class="text-on-surface-variant font-body-md mb-2">Layanan Konsultasi Cepat</p>
-                  <a href="https://wa.me/6282140009541" class="text-2xl font-bold text-primary hover:text-secondary transition-colors">+62 821 4000 9541</a>
+                <div class="flex-1">
+                  <h4 class="font-headline-md text-title-md font-bold text-slate-800 mb-1">Call Center</h4>
+                  <p class="text-slate-600 font-body-md mb-2">Layanan Konsultasi</p>
+                  <a href="https://wa.me/6282140009541" class="text-lg font-bold text-primary hover:text-secondary transition-colors inline-block mt-1">+62 821 4000 9541</a>
                 </div>
               </div>
               
-              <div class="flex items-start gap-4 mb-8">
-                <div class="w-12 h-12 bg-secondary/10 text-secondary rounded-xl flex items-center justify-center flex-shrink-0">
+              <div class="flex items-start gap-5">
+                <div class="w-12 h-12 bg-secondary/10 text-secondary rounded-lg flex items-center justify-center flex-shrink-0">
                   <span class="material-symbols-outlined text-2xl">mail</span>
                 </div>
-                <div>
-                  <h4 class="font-headline-md text-headline-md text-on-background mb-1">Email Resmi</h4>
-                  <p class="text-on-surface-variant font-body-md mb-2">Kemitraan & Informasi</p>
-                  <a href="mailto:info@ciptasehatbersama.com" class="text-lg font-bold text-primary hover:text-secondary transition-colors break-all">info@ciptasehatbersama.com</a>
+                <div class="flex-1">
+                  <h4 class="font-headline-md text-title-md font-bold text-slate-800 mb-1">Email Resmi</h4>
+                  <p class="text-slate-600 font-body-md mb-2">Kemitraan & Info</p>
+                  <a href="mailto:info@ciptasehatbersama.com" class="text-base font-bold text-primary hover:text-secondary transition-colors break-all inline-block mt-1">info@ciptasehatbersama.com</a>
                 </div>
               </div>
               
-              <div class="flex items-start gap-4">
-                <div class="w-12 h-12 bg-tertiary-fixed/30 text-tertiary rounded-xl flex items-center justify-center flex-shrink-0">
+              <div class="flex items-start gap-5">
+                <div class="w-12 h-12 bg-slate-100 text-slate-600 rounded-lg flex items-center justify-center flex-shrink-0">
                   <span class="material-symbols-outlined text-2xl">location_on</span>
                 </div>
-                <div>
-                  <h4 class="font-headline-md text-headline-md text-on-background mb-1">Kantor Pusat</h4>
-                  <p class="text-on-surface-variant font-body-md leading-relaxed">
+                <div class="flex-1">
+                  <h4 class="font-headline-md text-title-md font-bold text-slate-800 mb-1">Kantor Pusat</h4>
+                  <p class="text-slate-600 font-body-md leading-relaxed mt-2">
                     Jl. Prepedan No. 39, Kel. Kamal, <br/>
                     Kec. Kalideres, Jakarta Barat, <br/>
                     DKI Jakarta 11810
@@ -217,7 +213,7 @@
           </div>
           
           <!-- Maps Embed -->
-          <div class="lg:col-span-2 rounded-2xl overflow-hidden shadow-lg min-h-[450px] border border-outline-variant bg-surface-container-low relative">
+          <div class="lg:col-span-8 rounded-xl overflow-hidden shadow-sm min-h-[450px] border border-outline-variant bg-slate-50 relative">
             <iframe 
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3967.1147055745855!2d106.70275827552541!3d-6.115206360098495!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6a02b1f8ef94bd%3A0xc34cccecf55e378f!2sJl.%20Prepedan%20Raya%20No.39%2C%20RT.4%2FRW.9%2C%20Kamal%2C%20Kec.%20Kalideres%2C%20Kota%20Jakarta%20Barat%2C%20Daerah%20Khusus%20Ibukota%20Jakarta%2011810!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid" 
               class="absolute inset-0 w-full h-full" 

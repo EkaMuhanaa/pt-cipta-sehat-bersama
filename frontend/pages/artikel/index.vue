@@ -2,6 +2,7 @@
   <div>
     <!-- Hero Section -->
     <section class="relative pt-32 pb-20 overflow-hidden bg-surface-container-low text-center">
+      <div class="absolute inset-0 bg-cover bg-center opacity-20" :style="{ backgroundImage: `url(${getSetting('article_hero', 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=2000&auto=format&fit=crop')})` }"></div>
       <div class="relative z-10 max-w-container-max mx-auto px-margin-desktop">
         <h1 class="font-display-lg text-display-lg text-on-background mb-4">Wawasan &amp; Artikel Kesehatan</h1>
         <p class="text-body-lg font-body-lg text-on-surface-variant max-w-2xl mx-auto">
@@ -40,7 +41,7 @@
 
           <article v-else v-for="article in filteredArticles" :key="article.id" class="group bg-white rounded-2xl overflow-hidden border border-outline-variant hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col">
             <div class="relative h-60 overflow-hidden bg-surface-container-low">
-              <img :src="article.imageUrl || 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=1000&auto=format&fit=crop'" :alt="article.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img :src="article.image_url || 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=1000&auto=format&fit=crop'" :alt="article.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               <div class="absolute top-4 left-4 text-white text-xs font-bold px-3 py-1 rounded-full" 
                    :class="article.category === 'Medis' ? 'bg-primary' : article.category === 'K3' ? 'bg-on-background' : 'bg-secondary'">
                 {{ article.category }}
@@ -48,7 +49,7 @@
             </div>
             <div class="p-6 flex flex-col flex-grow">
               <div class="flex items-center gap-4 text-xs text-on-surface-variant mb-4">
-                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">calendar_today</span> {{ new Date(article.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) }}</span>
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">calendar_today</span> {{ new Date(article.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) }}</span>
                 <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">person</span> {{ article.author?.name || 'Admin' }}</span>
               </div>
               <NuxtLink :to="`/artikel/${article.slug}`">
@@ -110,6 +111,10 @@ const activeCategory = ref('Semua')
 const articles = ref([])
 const isLoading = ref(true)
 
+const { data: settingsData } = await useFetch('/api/settings')
+const settings = settingsData.value?.data || {}
+const getSetting = (key, defaultUrl) => settings[key] || defaultUrl
+
 const categories = ['Semua', 'Medis', 'Kalibrasi Alkes', 'K3']
 
 const filteredArticles = computed(() => {
@@ -122,8 +127,7 @@ const fetchArticles = async () => {
   try {
     const res = await $fetch('/api/articles')
     if (res.success) {
-      // Filter out unpublished articles
-      articles.value = res.data.filter(a => a.isPublished)
+      articles.value = res.data
     }
   } catch (error) {
     console.error('Error fetching articles:', error)

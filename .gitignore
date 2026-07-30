@@ -23,7 +23,10 @@ logs
 .env.*
 !.env.example
 
+# Database
 /generated/prisma
-
 *.db
 *.sqlite
+
+# Deprecated old backend
+backend_nodejs_deprecated/

@@ -39,7 +39,7 @@
             
             <!-- Date & Share Buttons -->
             <div class="flex items-center gap-6 text-gray-500 text-sm mb-8 pb-4">
-              <div>{{ new Date(article.createdAt).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }}</div>
+              <div>{{ new Date(article.created_at).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }}</div>
               
               <div class="flex items-center gap-3">
                 <span class="w-1 h-1 rounded-full bg-gray-400"></span>
@@ -66,8 +66,8 @@
             </p>
             
             <!-- Cover Image -->
-            <div v-if="article.imageUrl" class="mb-10">
-              <img :src="article.imageUrl" :alt="article.title" class="w-full h-auto rounded-lg object-cover border border-outline-variant" style="max-height: 500px;" />
+            <div v-if="article.image_url" class="mb-10">
+              <img :src="article.image_url" :alt="article.title" class="w-full h-auto rounded-lg object-cover border border-outline-variant" style="max-height: 500px;" />
             </div>
             
             <!-- Content -->
@@ -92,7 +92,7 @@
                 :to="`/artikel/${related.slug}`"
                 class="block group pb-6 border-b border-gray-100 last:border-0"
               >
-                <div class="text-xs text-gray-500 mb-2">{{ new Date(related.createdAt).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }}</div>
+                <div class="text-xs text-gray-500 mb-2">{{ new Date(related.created_at).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }}</div>
                 <h4 class="text-base font-bold text-gray-900 group-hover:text-primary transition-colors leading-snug">{{ related.title }}</h4>
               </NuxtLink>
             </div>
@@ -116,7 +116,7 @@ const isLoading = ref(true)
 const relatedArticles = computed(() => {
   if (!article.value || allArticles.value.length === 0) return []
   return allArticles.value
-    .filter(a => a.category === article.value.category && a.id !== article.value.id && a.isPublished)
+    .filter(a => a.category === article.value.category && a.id !== article.value.id)
     .slice(0, 5) // Show top 5 related articles
 })
 

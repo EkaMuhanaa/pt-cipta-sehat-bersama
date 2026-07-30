@@ -2,9 +2,10 @@
   <div>
     <!-- Hero Section -->
     <section class="relative py-24 overflow-hidden reveal-on-scroll bg-surface-container-lowest">
+      <div class="absolute inset-0 bg-cover bg-center opacity-20" :style="{ backgroundImage: `url(${getSetting('service_hero', 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2000&auto=format&fit=crop')})` }"></div>
       <div class="relative z-10 max-w-container-max mx-auto px-margin-desktop text-center">
-        <h1 class="font-display-lg text-display-lg text-on-background leading-tight mb-6 max-w-4xl mx-auto">
-          Solusi <span class="text-secondary">Kesehatan &amp; Keselamatan</span> Terintegrasi
+        <h1 class="font-display-lg text-display-lg text-black leading-tight mb-6 max-w-4xl mx-auto">
+          Solusi <span class="text-black">Kesehatan &amp; Keselamatan</span> Terintegrasi
         </h1>
         <p class="text-body-lg font-body-lg text-on-surface-variant max-w-2xl mx-auto">
           PT CIPTA SEHAT BERSAMA menyediakan ragam layanan komprehensif, dari pengadaan alat medis hingga pelatihan keselamatan kerja bersertifikasi.
@@ -125,7 +126,7 @@
             </div>
           </div>
           <div class="flex-1 relative">
-            <div class="rounded-2xl overflow-hidden shadow-2xl border-4 border-white/20 transform rotate-1 hover:rotate-0 transition-transform duration-500">
+            <div class="rounded-2xl overflow-hidden shadow-2xl border-4 border-white/20">
               <img :src="getSetting('service_tenaga', 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2000&auto=format&fit=crop')" alt="Tenaga Ahli" class="w-full h-full object-cover" />
             </div>
           </div>

@@ -8,9 +8,6 @@
         <div class="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
       </div>
       <div class="relative z-10 max-w-container-max mx-auto px-margin-desktop text-center">
-        <span class="inline-block py-1 px-4 bg-white/20 text-white rounded-full font-label-md text-label-md mb-6 backdrop-blur-sm border border-white/30">
-          Sertifikasi & Pelatihan
-        </span>
         <h1 class="font-display-lg text-display-lg text-white leading-tight mb-6 max-w-4xl mx-auto drop-shadow-lg">
           Edukasi & Pelatihan <span class="text-secondary">Keselamatan Kerja (K3)</span>
         </h1>

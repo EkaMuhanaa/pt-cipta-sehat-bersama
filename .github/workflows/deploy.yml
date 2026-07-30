@@ -4,7 +4,16 @@ on:
   push:
     branches:
       - main
+    paths:
+      - backend/**
+      - frontend/**
+      - .github/workflows/deploy.yml
   workflow_dispatch:
+    inputs:
+      reason:
+        description: Reason for this production rebuild
+        required: false
+        default: manual
 
 permissions:
   contents: read
@@ -13,6 +22,19 @@ concurrency:
   group: production-deploy
   cancel-in-progress: false
 
+env:
+  PUBLIC_SITE_URL: https://ciptasehatbersama.com
+  PUBLIC_API_BASE: https://api.ciptasehatbersama.com
+  SSH_PORT: ${{ secrets.SSH_PORT }}
+  SSH_USER: ${{ secrets.SSH_USER }}
+  SSH_HOST: ${{ secrets.SSH_HOST }}
+  DOMAIN_ROOT: ${{ secrets.DOMAIN_ROOT }}
+  SOURCE_ROOT: ${{ secrets.DOMAIN_ROOT }}/source
+  MAIN_PUBLIC: ${{ secrets.DOMAIN_ROOT }}/public_html
+  BACKEND_ROOT: ${{ secrets.DOMAIN_ROOT }}/source/backend
+  API_PUBLIC: ${{ secrets.DOMAIN_ROOT }}/public_html/api
+  DEFAULT_BRANCH: main
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -20,6 +42,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -29,36 +53,173 @@ jobs:
       - name: Build Frontend
         working-directory: ./frontend
         run: |
-          npm install
+          npm ci
           npm run build
+          
+          # Validasi Nuxt output
+          set -Eeuo pipefail
+          test -d .output/public
+          
+          # Buat satu artefak immutable
+          tar -czf ../frontend-release.tar.gz -C .output/public .
+          sha256sum ../frontend-release.tar.gz
         
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}" > ~/.ssh/hostinger_deploy
+          chmod 600 ~/.ssh/hostinger_deploy
           echo "${{ secrets.HOSTINGER_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
 
-      - name: Deploy Frontend via rsync
+      - name: Deploy Frontend via SCP & Rollback Trap
         run: |
-          # Menyalin hasil build Nuxt (.output/public) ke public_html
-          rsync -avz --delete -e "ssh -p ${{ secrets.SSH_PORT }}" \
-            ./frontend/.output/public/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DOMAIN_ROOT }}/public_html/
+          REMOTE_ARCHIVE="frontend-release-${GITHUB_RUN_ID}.tar.gz"
+          
+          scp \
+            -i "$HOME/.ssh/hostinger_deploy" \
+            -P "$SSH_PORT" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            frontend-release.tar.gz \
+            "$SSH_USER@$SSH_HOST:~/$REMOTE_ARCHIVE"
+            
+          ssh -i "$HOME/.ssh/hostinger_deploy" -p "$SSH_PORT" -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" << 'EOF'
+            set -Eeuo pipefail
+            
+            ARCHIVE="$HOME/frontend-release-${{ github.run_id }}.tar.gz"
+            ARCHIVE_ENTRIES="$(tar -tzf "$ARCHIVE")"
+            
+            if grep -Eq '^\./api(/|$)' <<< "$ARCHIVE_ENTRIES"; then
+              echo 'Frontend archive contains the protected API directory.' >&2
+              exit 1
+            fi
+            
+            RELEASES="$HOME/releases"
+            STAMP="$(date +%Y%m%d-%H%M%S)"
+            STAGING="$(mktemp -d "$HOME/frontend-staging.XXXXXX")"
+            BACKUP="$RELEASES/frontend-before-$STAMP.tar.gz"
+            MAIN_PUBLIC="${{ env.MAIN_PUBLIC }}"
+            
+            mkdir -p "$RELEASES"
+            tar -xzf "$ARCHIVE" -C "$STAGING"
+            
+            test ! -e "$STAGING/api"
+            
+            tar -czf "$BACKUP" \
+              --exclude='./api' \
+              -C "$MAIN_PUBLIC" .
+              
+            test "$(realpath "$MAIN_PUBLIC")" = "$MAIN_PUBLIC"
+            
+            DEPLOY_STARTED=0
+            
+            rollback_and_cleanup() {
+              status=$?
+              trap - EXIT
+            
+              if [ "$status" -ne 0 ] && [ "$DEPLOY_STARTED" -eq 1 ]; then
+                set +e
+                find "$MAIN_PUBLIC" -mindepth 1 -maxdepth 1 ! -name api \
+                  -exec rm -rf -- {} +
+                tar -xzf "$BACKUP" -C "$MAIN_PUBLIC"
+              fi
+            
+              rm -rf -- "$STAGING"
+              rm -f -- "$ARCHIVE"
+              exit "$status"
+            }
+            
+            trap rollback_and_cleanup EXIT
+            
+            DEPLOY_STARTED=1
+            
+            find "$MAIN_PUBLIC" -mindepth 1 -maxdepth 1 ! -name api \
+              -exec rm -rf -- {} +
+            
+            cp -a "$STAGING/." "$MAIN_PUBLIC/"
+            
+            # Smoke test
+            curl --fail --silent --show-error --location --output /dev/null "${{ env.PUBLIC_SITE_URL }}/" || exit 1
+            
+            DEPLOY_STARTED=0
+          EOF
 
-      - name: Deploy Backend via SSH
+      - name: Deploy Backend via SSH & Maintenance Trap
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            cd ${{ secrets.DOMAIN_ROOT }}/source
-            git fetch origin main
-            git reset --hard origin/main
+          ssh -i "$HOME/.ssh/hostinger_deploy" -p "$SSH_PORT" -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" << 'EOF'
+            set -Eeuo pipefail
             
-            cd backend
-            npm install
-            npx prisma generate
-            npx prisma migrate deploy
-            npm run build
+            DOMAIN_ROOT="${{ env.DOMAIN_ROOT }}"
+            SOURCE_ROOT="${{ env.SOURCE_ROOT }}"
+            MAIN_PUBLIC="${{ env.MAIN_PUBLIC }}"
+            BACKEND_ROOT="${{ env.BACKEND_ROOT }}"
+            API_PUBLIC="${{ env.API_PUBLIC }}"
+            DEFAULT_BRANCH="${{ env.DEFAULT_BRANCH }}"
+            EXPECTED_SHA="${{ github.sha }}"
             
-            # Restart service (Sesuaikan dengan metode Node.js Hostinger, misalnya PM2)
-            # pm2 restart backend
+            test "$(realpath "$DOMAIN_ROOT")" = "$DOMAIN_ROOT"
+            test "$(realpath "$SOURCE_ROOT")" = "$SOURCE_ROOT"
+            test "$(realpath "$MAIN_PUBLIC")" = "$MAIN_PUBLIC"
+            test -d "$BACKEND_ROOT"
+            
+            cd "$SOURCE_ROOT"
+            test -z "$(git status --porcelain --untracked-files=all)"
+            test "$(git branch --show-current)" = "$DEFAULT_BRANCH"
+            
+            git fetch origin "$DEFAULT_BRANCH"
+            
+            REMOTE_SHA="$(git rev-parse origin/$DEFAULT_BRANCH)"
+            CURRENT_SHA="$(git rev-parse HEAD)"
+            
+            test "$REMOTE_SHA" = "$EXPECTED_SHA"
+            git merge-base --is-ancestor "$CURRENT_SHA" "$EXPECTED_SHA"
+            
+            MAINTENANCE_ACTIVE=0
+            
+            restore_availability() {
+              status=$?
+              trap - EXIT
+            
+              if [ "$MAINTENANCE_ACTIVE" -eq 1 ]; then
+                set +e
+                cd "$BACKEND_ROOT"
+                php artisan up
+              fi
+            
+              exit "$status"
+            }
+            
+            trap restore_availability EXIT
+            
+            cd "$BACKEND_ROOT"
+            MAINTENANCE_ACTIVE=1
+            php artisan down --retry=60
+            
+            cd "$SOURCE_ROOT"
+            git merge --ff-only "$EXPECTED_SHA"
+            test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+            
+            cd "$BACKEND_ROOT"
+            composer install \
+              --no-dev \
+              --prefer-dist \
+              --optimize-autoloader \
+              --no-interaction \
+              --no-scripts
+            
+            php artisan package:discover --ansi
+            php artisan migrate --force
+            
+            mkdir -p "$API_PUBLIC"
+            cp -a "$BACKEND_ROOT/public/." "$API_PUBLIC/"
+            cp "$BACKEND_ROOT/deploy/hostinger/index.php" "$API_PUBLIC/index.php"
+            
+            php artisan optimize:clear
+            php artisan optimize
+            php artisan up
+            MAINTENANCE_ACTIVE=0
+            
+            # Smoke test API
+            curl --fail --silent --show-error --output /dev/null "${{ env.PUBLIC_API_BASE }}/up" || exit 1
           EOF

@@ -1,7 +1,3 @@
-// Ganti URL ini dengan URL Ngrok Anda saat akan push ke Vercel!
-// Contoh: const API_URL = 'https://1234-abcd.ngrok-free.app'
-const API_URL = process.env.API_URL || 'http://localhost:4000'
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
