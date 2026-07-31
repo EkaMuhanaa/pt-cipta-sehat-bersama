@@ -2,7 +2,11 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: [
+    '@nuxtjs/tailwindcss',
+    '@nuxtjs/robots',
+    '@nuxtjs/sitemap'
+  ],
   app: {
     head: {
       title: 'PT CIPTA SEHAT BERSAMA | Solusi Terpadu Kesehatan',
@@ -14,5 +18,9 @@ export default defineNuxtConfig({
       ]
     }
   },
-  css: ['~/assets/css/main.css']
+  css: ['~/assets/css/main.css'],
+  site: {
+    url: 'https://ciptasehatbersama.com',
+    name: 'PT CIPTA SEHAT BERSAMA'
+  }
 })
