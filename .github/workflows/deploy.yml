@@ -53,7 +53,7 @@ jobs:
       - name: Build Frontend
         working-directory: ./frontend
         run: |
-          npm ci
+          npm install
           npm run generate
           
           # Validasi Nuxt output
